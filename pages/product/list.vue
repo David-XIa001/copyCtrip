@@ -25,7 +25,7 @@
 				<view class="image-wrapper">
 					<image :src="item.image" mode="aspectFill"></image>
 				</view>
-				<text class="title clamp">{{item.title}}</text>
+				<text class="title clamp">{{item.name}}</text>
 				<view class="price-box">
 					<text class="price">{{item.price}}</text>
 					<text>已售 {{item.sales}}</text>
@@ -70,11 +70,13 @@
 				cateId: 0, //已选三级分类id
 				priceOrder: 0, //1 价格从低到高 2价格从高到低
 				cateList: [],
-				goodsList: []
+				goodsList: [],
+				currentCity: '',
 			};
 		},
 		
 		onLoad(options){
+			this.currentCity = options.city
 			// #ifdef H5
 			this.headerTop = document.getElementsByTagName('uni-page-head')[0].offsetHeight+'px';
 			// #endif
@@ -121,8 +123,18 @@
 				}else{
 					this.loadingType = 'more'
 				}
-				
-				let goodsList = await this.$api.json('goodsList');
+				const goodsList = []
+				await this.$api.json('goodsList').then(res=>{
+					if(this.currentCity){
+						res.filter(item=>{
+							if (item.city === this.currentCity){
+								goodsList.push(item)
+							}
+						})
+					}else{
+						goodsList = res
+					}
+				})
 				if(type === 'refresh'){
 					this.goodsList = [];
 				}
@@ -196,9 +208,8 @@
 			//详情
 			navToDetailPage(item){
 				//测试数据没有写id，用title代替
-				let id = item.title;
 				uni.navigateTo({
-					url: `/pages/product/product?id=${id}`
+					url: `/pages/product/product?id=${item.id}`
 				})
 			},
 			stopPrevent(){}
@@ -217,7 +228,7 @@
 	.navbar{
 		position: fixed;
 		left: 0;
-		top: var(--window-top);
+		top: 44upx;
 		display: flex;
 		width: 100%;
 		height: 80upx;

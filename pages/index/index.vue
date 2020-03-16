@@ -22,15 +22,15 @@
 		<view class="cate-section">
 			<view class="cate-item">
 				<image src="/static/temp/icon/icon-hl-001.png"></image>
-				<text>民宿公寓</text>
+				<a href="#homestay">民宿公寓</a>
 			</view>
 			<view class="cate-item">
 				<image src="/static/temp/icon/icon-hl-002.png"></image>
-				<text>钟点房间</text>
+				<a href="#hourRoom">钟点房间</a>
 			</view>
 			<view class="cate-item">
 				<image src="/static/temp/icon/icon-hl-003.png"></image>
-				<text>酒店特惠</text>
+				<a href="#discount">酒店特惠</a>
 			</view>
 			<view class="cate-item">
 				<image src="/static/temp/icon/icon-hl-004.png"></image>
@@ -38,12 +38,78 @@
 			</view>
 		</view>
 		
-		<view class="ad-1">
-			<image src="/static/temp/ad1.jpg" mode="scaleToFill"></image>
+		<!-- 订酒店 -->
+		<view class="body">
+			<view class="header">
+				<view  @tap="switch1(0)" :class="current === 0 ? 'active left':'left'">国内酒店</view>
+				<view  @tap="switch1(1)" :class="current === 1 ? 'active right':'right'">国际酒店</view>
+			</view>
+			<view v-if="current === 0" class="box1">
+				<view class="location">
+					<picker @change="bindPickerChangeLocation" :value="locationIndex" :range="array" >
+							 {{array[locationIndex] ? '选择地点:  ' + array[locationIndex]:'选择地点:'}}
+					</picker>
+				</view>
+
+				<view class="date">
+					<picker  mode="date" @change="bindDateChange" >
+					        {{startDate ? '入住时间:  ' + startDate:'入住时间:'}}
+					</picker>
+				</view>
+				<view class="date">
+					<picker  mode="date" @change="bindDateChange1" >
+					        {{endDate ? '离开时间:  ' + endDate:'离开时间:'}}
+					</picker>
+				</view>
+				<view @tap="search" class="search">查询酒店</view>
+			</view>
+			<view v-if="current === 1" class="box2">
+				<view class="location">
+						<picker @change="bindPickerChangeLocation" :value="locationIndex1" :range="array1" >
+								 {{array1[locationIndex1] ? '选择地点:  ' + array1[locationIndex1]:'选择地点:'}}
+						</picker>
+					</view>
+				
+					<view class="date">
+						<picker  mode="date" @change="bindDateChange" >
+						        {{startDate ? '入住时间:  ' + startDate:'入住时间:'}}
+						</picker>
+					</view>
+					<view class="date">
+						<picker  mode="date" @change="bindDateChange1" >
+						        {{endDate ? '离开时间:  ' + endDate:'离开时间:'}}
+						</picker>
+					</view>
+				<view  @tap="search" class="search">查询酒店</view>
+			</view>
+		</view>
+		
+		<!-- 猜你喜欢 -->
+		<view class="f-header m-t">
+			<image src="/static/temp/h1.png"></image>
+			<view class="tit-box">
+				<text class="tit">猜你喜欢</text>
+				<text class="tit2">Guess You Like It</text>
+			</view>
+			<text class="yticon icon-you"></text>
+		</view>
+		
+		<view class="guess-section">
+			<view 
+				v-for="(item, index) in recommendList" :key="index"
+				class="guess-item"
+				@click="navToDetailPage(item)"
+			>
+				<view class="image-wrapper">
+					<image :src="item.image" mode="aspectFill"></image>
+				</view>
+				<text class="title clamp">{{item.name}}</text>
+				<text class="price">￥{{item.price}}</text>
+			</view>
 		</view>
 		
 		<!-- 秒杀楼层 -->
-		<view class="seckill-section m-t">
+<!-- 		<view class="seckill-section m-t">
 			<view class="s-header">
 				<image class="s-img" src="/static/temp/secskill-img.jpg" mode="widthFix"></image>
 				<text class="tip">8点场</text>
@@ -66,62 +132,7 @@
 				</view>
 			</scroll-view>
 		</view>
-		
-		<!-- 团购楼层 -->
-		<view class="f-header m-t">
-			<image src="/static/temp/h1.png"></image>
-			<view class="tit-box">
-				<text class="tit">精品团购</text>
-				<text class="tit2">Boutique Group Buying</text>
-			</view>
-			<text class="yticon icon-you"></text>
-		</view>
-		<view class="group-section">
-			<swiper class="g-swiper" :duration="500">
-				<swiper-item
-					class="g-swiper-item"
-					v-for="(item, index) in goodsList" :key="index"
-					v-if="index%2 === 0"
-					@click="navToDetailPage(item)"
-				>
-					<view class="g-item left">
-						<image :src="item.image" mode="aspectFill"></image>
-						<view class="t-box">
-							<text class="title clamp">{{item.title}}</text>
-							<view class="price-box">
-								<text class="price">￥{{item.price}}</text> 
-								<text class="m-price">￥188</text> 
-							</view>
-							
-							<view class="pro-box">
-							  	<view class="progress-box">
-							  		<progress percent="72" activeColor="#fa436a" active stroke-width="6" />
-							  	</view>
-								<text>6人成团</text>
-							</view>
-						</view>
-						            
-					</view>
-					<view class="g-item right">
-						<image :src="goodsList[index+1].image" mode="aspectFill"></image>
-						<view class="t-box">
-							<text class="title clamp">{{goodsList[index+1].title}}</text>
-							<view class="price-box">
-								<text class="price">￥{{goodsList[index+1].price}}</text> 
-								<text class="m-price">￥188</text> 
-							</view>
-							<view class="pro-box">
-							  	<view class="progress-box">
-							  		<progress percent="72" activeColor="#fa436a" active stroke-width="6" />
-							  	</view>
-								<text>10人成团</text>
-							</view>
-						</view>
-					</view>
-				</swiper-item>
-
-			</swiper>
-		</view>
+		 -->
 		
 		
 		
@@ -134,19 +145,19 @@
 			</view>
 			<text class="yticon icon-you"></text>
 		</view>
-		<view class="hot-floor">
+		<view id="homestay" class="hot-floor">
 			<view class="floor-img-box">
-				<image class="floor-img" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1553409398864&di=4a12763adccf229133fb85193b7cc08f&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201703%2F19%2F20170319150032_MNwmn.jpeg" mode="scaleToFill"></image>
+				<image class="floor-img" src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=3542922432,1408635103&fm=26&gp=0.jpg" mode="scaleToFill"></image>
 			</view>
 			<scroll-view class="floor-list" scroll-x>
 				<view class="scoll-wrapper">
 					<view 
-						v-for="(item, index) in goodsList" :key="index"
+						v-for="(item, index) in classList.homestay" :key="index"
 						class="floor-item"
 						@click="navToDetailPage(item)"
 					>
 						<image :src="item.image" mode="aspectFill"></image>
-						<text class="title clamp">{{item.title}}</text>
+						<text class="title clamp">{{item.name}}</text>
 						<text class="price">￥{{item.price}}</text>
 					</view>
 					<view class="more">
@@ -156,19 +167,19 @@
 				</view>
 			</scroll-view>
 		</view>
-		<view class="hot-floor">
+		<view id="hourRoom" class="hot-floor">
 			<view class="floor-img-box">
-				<image class="floor-img" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1553409984228&di=dee176242038c2d545b7690b303d65ea&imgtype=0&src=http%3A%2F%2Fhbimg.b0.upaiyun.com%2F5ef4da9f17faaf4612f0d5046f4161e556e9bbcfdb5b-rHjf00_fw658" mode="scaleToFill"></image>
+				<image class="floor-img" src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3821067810,1375345716&fm=26&gp=0.jpg" mode="scaleToFill"></image>
 			</view>
 			<scroll-view class="floor-list" scroll-x>
 				<view class="scoll-wrapper">
 					<view 
-						v-for="(item, index) in goodsList" :key="index"
+						v-for="(item, index) in classList.hourRoom" :key="index"
 						class="floor-item"
 						@click="navToDetailPage(item)"
 					>
-						<image :src="item.image3" mode="aspectFill"></image>
-						<text class="title clamp">{{item.title}}</text>
+						<image :src="item.image" mode="aspectFill"></image>
+						<text class="title clamp">{{item.name}}</text>
 						<text class="price">￥{{item.price}}</text>
 					</view>
 					<view class="more">
@@ -178,19 +189,19 @@
 				</view>
 			</scroll-view>
 		</view>
-		<view class="hot-floor">
+		<view id="discount" class="hot-floor">
 			<view class="floor-img-box">
-				<image class="floor-img" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1553409794730&di=12b840ec4f5748ef06880b85ff63e34e&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01dc03589ed568a8012060c82ac03c.jpg%40900w_1l_2o_100sh.jpg" mode="scaleToFill"></image>
+				<image class="floor-img" src="https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=3858741218,3141672019&fm=26&gp=0.jpg" mode="scaleToFill"></image>
 			</view>
 			<scroll-view class="floor-list" scroll-x>
 				<view class="scoll-wrapper">
 					<view 
-						v-for="(item, index) in goodsList" :key="index"
+						v-for="(item, index) in classList.discount" :key="index"
 						class="floor-item"
 						@click="navToDetailPage(item)"
 					>
-						<image :src="item.image2" mode="aspectFill"></image>
-						<text class="title clamp">{{item.title}}</text>
+						<image :src="item.image" mode="aspectFill"></image>
+						<text class="title clamp">{{item.name}}</text>
 						<text class="price">￥{{item.price}}</text>
 					</view>
 					<view class="more">
@@ -201,45 +212,31 @@
 			</scroll-view>
 		</view>
 
-		<!-- 猜你喜欢 -->
-		<view class="f-header m-t">
-			<image src="/static/temp/h1.png"></image>
-			<view class="tit-box">
-				<text class="tit">猜你喜欢</text>
-				<text class="tit2">Guess You Like It</text>
-			</view>
-			<text class="yticon icon-you"></text>
-		</view>
-		
-		<view class="guess-section">
-			<view 
-				v-for="(item, index) in goodsList" :key="index"
-				class="guess-item"
-				@click="navToDetailPage(item)"
-			>
-				<view class="image-wrapper">
-					<image :src="item.image" mode="aspectFill"></image>
-				</view>
-				<text class="title clamp">{{item.title}}</text>
-				<text class="price">￥{{item.price}}</text>
-			</view>
-		</view>
 		
 
 	</view>
 </template>
 
 <script>
-
 	export default {
-
+            // 设置日期
 		data() {
 			return {
 				titleNViewBackground: '',
 				swiperCurrent: 0,
 				swiperLength: 0,
 				carouselList: [],
-				goodsList: []
+				goodsList: [],
+				// 当前选中的酒店
+				current: 0, //0-国内 1-国际
+				locationIndex: 0,
+				locationIndex1: 0,
+				array: ['北京', '上海', '广州', '海南', '香港'],
+				array1: ['伦敦', '纽约', '东京'],
+				startDate: '', 
+				endDate: '', 
+				recommendList: [],
+				classList:{},
 			};
 		},
 
@@ -256,8 +253,13 @@
 				this.titleNViewBackground = carouselList[0].background;
 				this.swiperLength = carouselList.length;
 				this.carouselList = carouselList;
-				
 				let goodsList = await this.$api.json('goodsList');
+				this.$api.json('recommendList').then(res=>{
+					this.recommendList = res
+				})
+				this.$api.json('classList').then(res=>{
+					this.classList = res
+				})
 				this.goodsList = goodsList || [];
 			},
 			//轮播图切换修改背景色
@@ -265,6 +267,32 @@
 				const index = e.detail.current;
 				this.swiperCurrent = index;
 				this.titleNViewBackground = this.carouselList[index].background;
+			},
+			// 切换国内国际
+			switch1(num){
+				if(num === 0){
+					this.current = 0
+				}else{
+					this.current = 1
+				}
+			},
+			// 选择地点
+			bindPickerChangeLocation (e){
+				this.locationIndex = e.detail.value
+			},
+			// 选择入住日期
+			bindDateChange (e) {
+				this.startDate = e.detail.value
+			},
+			// 选择离开日期
+			bindDateChange1 (e) {
+				this.endDate = e.detail.value
+			},
+			// 查询酒店
+			search () {
+				uni.navigateTo({
+					url: `/pages/product/list?city=${this.array[this.locationIndex]}`
+				})
 			},
 			//详情页
 			navToDetailPage(item) {
@@ -275,31 +303,6 @@
 				})
 			},
 		},
-		// #ifndef MP
-		// 标题栏input搜索框点击
-		onNavigationBarSearchInputClicked: async function(e) {
-			this.$api.msg('点击了搜索框');
-		},
-		//点击导航栏 buttons 时触发
-		onNavigationBarButtonTap(e) {
-			const index = e.index;
-			if (index === 0) {
-				this.$api.msg('点击了扫描');
-			} else if (index === 1) {
-				// #ifdef APP-PLUS
-				const pages = getCurrentPages();
-				const page = pages[pages.length - 1];
-				const currentWebview = page.$getAppWebview();
-				currentWebview.hideTitleNViewButtonRedDot({
-					index
-				});
-				// #endif
-				uni.navigateTo({
-					url: '/pages/notice/notice'
-				})
-			}
-		}
-		// #endif
 	}
 </script>
 
@@ -425,14 +428,55 @@
 			margin-bottom: 14upx;
 		}
 	}
-	.ad-1{
-		width: 100%;
-		height: 210upx;
-		padding: 10upx 0;
-		background: #fff;
-		image{
-			width:100%;
-			height: 100%; 
+	/* 订酒店 */ 
+	.body{
+		width: 640upx;
+		height: 590upx;
+		background-color: #ffffff;
+		margin: 20upx auto;
+		border-radius: 16upx;
+		.header{
+			height: 80upx;
+			display: flex;
+			.left,.right{
+				width: 50%;
+				height: 80upx;
+				text-align: center;
+				line-height: 80upx;
+				color: #585858;
+				font-size: 32upx;
+				background-color: #909399;
+			}
+			.active{
+				background-color: #ffffff;
+				color: #4499ff;
+			}
+		}
+		.box1,.box2{
+			height: 510upx;
+			padding: 0 30upx 30upx 30upx;
+			.location,.date,.search{
+				height: 100upx;
+				width: 580upx;
+				border-bottom: 1px solid #EEEEEE;
+				line-height: 100upx;
+				color: #000;
+				font-size: 32upx;
+				font-weight: 500;
+			}	
+			.date{
+				color: #333;
+				font-weight:400;
+			}
+			.search{
+				margin-top: 50upx;
+				height: 88upx;
+				border-radius: 16upx;
+				background-color: #4499ff;
+				color: #fff;
+				text-align: center;
+				line-height: 88upx;
+			}
 		}
 	}
 	/* 秒杀专区 */
