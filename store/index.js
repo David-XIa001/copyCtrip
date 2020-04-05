@@ -7,6 +7,8 @@ const store = new Vuex.Store({
 	state: {
 		hasLogin: false,
 		userInfo: {},
+		// 选择的时间
+		choiceTime:{},
 	},
 	mutations: {
 		login(state, provider) {
@@ -25,6 +27,10 @@ const store = new Vuex.Store({
 			uni.removeStorage({  
                 key: 'userInfo'  
             })
+		},
+		getTime(state,data){
+			state.choiceTime = data
+			console.log('state',state)
 		}
 	},
 	actions: {

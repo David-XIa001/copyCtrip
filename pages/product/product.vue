@@ -5,7 +5,7 @@
 				<swiper-item class="swiper-item" v-for="(item,index) in imgList" :key="index">
 					<view class="image-wrapper">
 						<image
-							:src="item.src" 
+							:src="item" 
 							class="loaded" 
 							mode="aspectFill"
 						></image>
@@ -15,22 +15,37 @@
 		</view>
 		
 		<view class="introduce-section">
-			<text class="title">恒源祥2019春季长袖白色t恤 新款春装</text>
+			<text class="title">{{hotelInfo.name}}</text>
 			<view class="price-box">
-				<text class="price-tip">¥</text>
-				<text class="price">341.6</text>
-				<text class="m-price">¥488</text>
-				<text class="coupon-tip">7折</text>
+				<text class="price">¥{{hotelInfo.price}}起</text>
+				<text class="sales">销量: {{hotelInfo.sales}}</text>
 			</view>
-			<view class="bot-row">
-				<text>销量: 108</text>
-				<text>库存: 4690</text>
-				<text>浏览量: 768</text>
+		</view>
+		
+		<!-- 房间列表 -->
+		<view class="room-list">
+			<view v-for="(item,index) in room" :key="index" class="room">
+				<image :src = "item.picture"></image>
+				<view class="right">
+					<view class="introduce">
+						<text class="name">{{item.name}}</text>
+						<view class="tag">
+							<text>{{item.area}}㎡</text>
+							<text>{{item.isWindow == 1 ?'有窗':'无窗'}}</text>
+							<text>{{item.isBreast == 1 ?'有早餐':'无早餐'}}</text>
+						</view>
+						<view class="vip">会员专享</view>
+					</view>
+					<view class="buy">
+						<view class="price">¥{{item.price}}</view>
+						<view class="pay" @tap="buy(item)">支付</view>
+					</view>
+				</view>
 			</view>
 		</view>
 		
 		<!--  分享 -->
-		<view class="share-section" @click="share">
+<!-- 		<view class="share-section" @click="share">
 			<view class="share-icon">
 				<text class="yticon icon-xingxing"></text>
 				 返
@@ -42,9 +57,9 @@
 				<text class="yticon icon-you"></text>
 			</view>
 			
-		</view>
+		</view> -->
 		
-		<view class="c-list">
+<!-- 		<view class="c-list">
 			<view class="c-row b-b" @click="toggleSpec">
 				<text class="tit">购买类型</text>
 				<view class="con">
@@ -75,10 +90,10 @@
 					<text>假一赔十 ·</text>
 				</view>
 			</view>
-		</view>
+		</view> -->
 		
 		<!-- 评价 -->
-		<view class="eva-section">
+<!-- 		<view class="eva-section">
 			<view class="e-header">
 				<text class="tit">评价</text>
 				<text>(86)</text>
@@ -96,14 +111,14 @@
 					</view>
 				</view>
 			</view>
-		</view>
+		</view> -->
 		
-		<view class="detail-desc">
+<!-- 		<view class="detail-desc">
 			<view class="d-header">
 				<text>图文详情</text>
 			</view>
 			<rich-text :nodes="desc"></rich-text>
-		</view>
+		</view> -->
 		
 		<!-- 底部操作菜单 -->
 		<view class="page-bottom">
@@ -184,22 +199,15 @@
 		},
 		data() {
 			return {
+				// 酒店信息
+				hotelInfo:{},
+				// 房间信息
+				room:[],
 				specClass: 'none',
 				specSelected:[],
-				
 				favorite: true,
 				shareList: [],
-				imgList: [
-					{
-						src: 'https://gd3.alicdn.com/imgextra/i3/0/O1CN01IiyFQI1UGShoFKt1O_!!0-item_pic.jpg_400x400.jpg'
-					},
-					{
-						src: 'https://gd3.alicdn.com/imgextra/i3/TB1RPFPPFXXXXcNXpXXXXXXXXXX_!!0-item_pic.jpg_400x400.jpg'
-					},
-					{
-						src: 'https://gd2.alicdn.com/imgextra/i2/38832490/O1CN01IYq7gu1UGShvbEFnd_!!38832490.jpg_400x400.jpg'
-					}
-				],
+				imgList: [],
 				desc: `
 					<div style="width:100%">
 						<img style="width:100%;display:block;" src="https://gd3.alicdn.com/imgextra/i4/479184430/O1CN01nCpuLc1iaz4bcSN17_!!479184430.jpg_400x400.jpg" />
@@ -269,14 +277,33 @@
 			};
 		},
 		async onLoad(options){
+			uni.request({
+			　　url:"http://127.0.0.1:3001/api/searcRoom",
+			　　method:"GET",
+				data: {
+						id: 1
+					},
+			　　success:(res)=> {
+				console.log('sss',res.data)
+				this.hotelInfo = res.data.hotel
+				this.room = res.data.room
+				this.imgList.push(this.hotelInfo.banner)
+				this.room.forEach((item)=>{
+					this.imgList.push(item.picture)
+				})
+				// this.imgList.push(res.data.hotel.banner)
+						// this.goodsList = res.data
+			　　}
+			})
 			console.log('aaa0',options.id)
 			//接收传值,id里面放的是标题，因为测试数据并没写id 
 			let id = options.id;
-			if(id){
-				this.$api.msg(`点击了${id}`);
-			}
-			
-			
+			// if(id){
+			// 	this.$api.msg(`点击了${id}`);
+			// }
+			await this.$api.json('goodsList').then(res=>{
+				
+			})
 			//规格 默认选中第一条
 			this.specList.forEach(item=>{
 				for(let cItem of this.specChildList){
@@ -291,51 +318,51 @@
 		},
 		methods:{
 			//规格弹窗开关
-			toggleSpec() {
-				if(this.specClass === 'show'){
-					this.specClass = 'hide';
-					setTimeout(() => {
-						this.specClass = 'none';
-					}, 250);
-				}else if(this.specClass === 'none'){
-					this.specClass = 'show';
-				}
-			},
+			// toggleSpec() {
+			// 	if(this.specClass === 'show'){
+			// 		this.specClass = 'hide';
+			// 		setTimeout(() => {
+			// 			this.specClass = 'none';
+			// 		}, 250);
+			// 	}else if(this.specClass === 'none'){
+			// 		this.specClass = 'show';
+			// 	}
+			// },
 			//选择规格
-			selectSpec(index, pid){
-				let list = this.specChildList;
-				list.forEach(item=>{
-					if(item.pid === pid){
-						this.$set(item, 'selected', false);
-					}
-				})
+			// selectSpec(index, pid){
+			// 	let list = this.specChildList;
+			// 	list.forEach(item=>{
+			// 		if(item.pid === pid){
+			// 			this.$set(item, 'selected', false);
+			// 		}
+			// 	})
 
-				this.$set(list[index], 'selected', true);
-				//存储已选择
-				/**
-				 * 修复选择规格存储错误
-				 * 将这几行代码替换即可
-				 * 选择的规格存放在specSelected中
-				 */
-				this.specSelected = []; 
-				list.forEach(item=>{ 
-					if(item.selected === true){ 
-						this.specSelected.push(item); 
-					} 
-				})
+			// 	this.$set(list[index], 'selected', true);
+			// 	//存储已选择
+			// 	/**
+			// 	 * 修复选择规格存储错误
+			// 	 * 将这几行代码替换即可
+			// 	 * 选择的规格存放在specSelected中
+			// 	 */
+			// 	this.specSelected = []; 
+			// 	list.forEach(item=>{ 
+			// 		if(item.selected === true){ 
+			// 			this.specSelected.push(item); 
+			// 		} 
+			// 	})
 				
-			},
+			// },
 			//分享
-			share(){
-				this.$refs.share.toggleMask();	
-			},
+			// share(){
+			// 	this.$refs.share.toggleMask();	
+			// },
 			//收藏
-			toFavorite(){
-				this.favorite = !this.favorite;
-			},
-			buy(){
+			// toFavorite(){
+			// 	this.favorite = !this.favorite;
+			// },
+			buy(item){
 				uni.navigateTo({
-					url: `/pages/order/createOrder`
+					url: `/pages/order/createOrder?id=${item.id}`
 				})
 			},
 			stopPrevent(){}
@@ -354,7 +381,7 @@
 		color: #888;
 	}
 	.carousel {
-		height: 722upx;
+		height: 600upx;
 		position:relative;
 		swiper{
 			height: 100%;
@@ -391,6 +418,7 @@
 		.price-box{
 			display:flex;
 			align-items:baseline;
+			justify-content: space-between;
 			height: 64upx;
 			padding: 10upx 0;
 			font-size: 26upx;
@@ -399,29 +427,81 @@
 		.price{
 			font-size: $font-lg + 2upx;
 		}
-		.m-price{
-			margin:0 12upx;
-			color: $font-color-light;
-			text-decoration: line-through;
+		.sales{
+			font-size: $font-lg + 2upx;
 		}
-		.coupon-tip{
-			align-items: center;
-			padding: 4upx 10upx;
-			background: $uni-color-primary;
-			font-size: $font-sm;
-			color: #fff;
-			border-radius: 6upx;
-			line-height: 1;
-			transform: translateY(-4upx); 
-		}
-		.bot-row{
-			display:flex;
-			align-items:center;
-			height: 50upx;
-			font-size: $font-sm;
-			color: $font-color-light;
-			text{
-				flex: 1;
+	}
+	.room-list{
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding-top: 20upx;
+		.room{
+			width: 670upx;
+			height: 200upx;
+			margin-bottom: 20upx;
+			border-radius: 8upx;
+			background-color: #fff;
+			padding: 10upx;
+			display: flex;
+			justify-content: space-between;
+			image{
+				height: 180upx;
+				width: 220upx;
+			}
+			.right{
+				width: 500upx;
+				height: 100%;
+				margin-left: 30upx;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				.introduce{
+					width: 260upx;
+					height: 100%;
+					display: flex;
+					justify-content: space-around;
+					flex-direction: column;
+					.name{
+						font-size: $font-lg + 2upx;
+						color: #333333;
+					}
+					.tag{
+						font-size: $font-lg - 2upx;
+						color: #999999;
+						text{
+							margin-right:10upx;
+						}
+					}
+					.vip{
+						font-size: $font-lg;
+						color:$uni-color-primary;
+					}
+				}
+				.buy{
+					display: flex;
+					justify-content: space-around;
+					flex-direction: column;
+					margin-right: 20upx;
+					.price{
+						font-size: $font-lg + 2upx;
+						color:$uni-color-primary;
+					}
+					.pay{
+						font-size: $font-lg - 2upx;
+						background-color: #D2B892;
+						color: #333333;
+						width: 100upx;
+						height: 48upx;
+						line-height: 48upx;
+						border-radius: 8upx;
+						text-align: center;
+					}
+				}
+				
+					
 			}
 		}
 	}

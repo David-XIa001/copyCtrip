@@ -101,7 +101,7 @@
 				@click="navToDetailPage(item)"
 			>
 				<view class="image-wrapper">
-					<image :src="item.image" mode="aspectFill"></image>
+					<image :src="item.banner" mode="aspectFill"></image>
 				</view>
 				<text class="title clamp">{{item.name}}</text>
 				<text class="price">￥{{item.price}}</text>
@@ -156,7 +156,7 @@
 						class="floor-item"
 						@click="navToDetailPage(item)"
 					>
-						<image :src="item.image" mode="aspectFill"></image>
+						<image :src="item.banner" mode="aspectFill"></image>
 						<text class="title clamp">{{item.name}}</text>
 						<text class="price">￥{{item.price}}</text>
 					</view>
@@ -178,7 +178,7 @@
 						class="floor-item"
 						@click="navToDetailPage(item)"
 					>
-						<image :src="item.image" mode="aspectFill"></image>
+						<image :src="item.banner" mode="aspectFill"></image>
 						<text class="title clamp">{{item.name}}</text>
 						<text class="price">￥{{item.price}}</text>
 					</view>
@@ -200,7 +200,7 @@
 						class="floor-item"
 						@click="navToDetailPage(item)"
 					>
-						<image :src="item.image" mode="aspectFill"></image>
+						<image :src="item.banner" mode="aspectFill"></image>
 						<text class="title clamp">{{item.name}}</text>
 						<text class="price">￥{{item.price}}</text>
 					</view>
@@ -218,6 +218,10 @@
 </template>
 
 <script>
+	// import jq from '../../jquery.min.js'
+	import {
+	    mapMutations  
+	} from 'vuex';
 	export default {
             // 设置日期
 		data() {
@@ -236,7 +240,11 @@
 				startDate: '', 
 				endDate: '', 
 				recommendList: [],
-				classList:{},
+				classList:{
+					homestay:[],
+					hourRoom:[],
+					discount:[]
+				},
 			};
 		},
 
@@ -244,23 +252,39 @@
 			this.loadData();
 		},
 		methods: {
+			...mapMutations(['getTime']),
 			/**
 			 * 请求静态数据只是为了代码不那么乱
 			 * 分次请求未作整合
 			 */
 			async loadData() {
+				// 获取轮播图
 				let carouselList = await this.$api.json('carouselList');
 				this.titleNViewBackground = carouselList[0].background;
 				this.swiperLength = carouselList.length;
 				this.carouselList = carouselList;
-				let goodsList = await this.$api.json('goodsList');
-				this.$api.json('recommendList').then(res=>{
-					this.recommendList = res
-				})
-				this.$api.json('classList').then(res=>{
-					this.classList = res
-				})
-				this.goodsList = goodsList || [];
+				// 获取所有的酒店列表
+				uni.request({
+				　　url:"http://127.0.0.1:3001/api/hotelList",
+				　　method:"GET",
+				　　success:(res)=> {
+					this.goodsList = res.data || [];
+					this.goodsList.forEach((item)=>{
+						if(item.type === 'hourRoom'){
+							this.classList.hourRoom.push(item)
+						}
+						if(item.type === 'discount'){
+							this.classList.discount.push(item)
+						}
+						if(item.type === 'homestay'){
+							this.classList.homestay.push(item)
+						}
+						if(item.like){
+							this.recommendList.push(item)
+						}
+					})
+				　　}
+				　})
 			},
 			//轮播图切换修改背景色
 			swiperChange(e) {
@@ -288,8 +312,16 @@
 			bindDateChange1 (e) {
 				this.endDate = e.detail.value
 			},
+			showData (result) {
+			     var data = JSON.stringify(result); //json对象转成字符串
+			     console.log('111',data);
+			 },
 			// 查询酒店
 			search () {
+				let obj = {}
+				obj.endDate = this.endDate
+				obj.startDate = this.startDate
+				this.getTime(obj);
 				uni.navigateTo({
 					url: `/pages/product/list?city=${this.array[this.locationIndex]}`
 				})
@@ -297,7 +329,7 @@
 			//详情页
 			navToDetailPage(item) {
 				//测试数据没有写id，用title代替
-				let id = item.title;
+				let id = item.id;
 				uni.navigateTo({
 					url: `/pages/product/product?id=${id}`
 				})

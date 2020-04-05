@@ -124,6 +124,7 @@
 </template>
 
 <script>
+	import { mapState } from 'vuex'; 
 	export default {
 		data() {
 			return {
@@ -159,9 +160,13 @@
 			//let data = JSON.parse(option.data);
 			//console.log(data);
 		},
+		computed: {
+			...mapState(['choiceTime'])
+		},
 		methods: {
 			//显示优惠券面板
 			toggleMask(type){
+				console.log('sss',this.choiceTime)
 				let timer = type === 'show' ? 10 : 300;
 				let	state = type === 'show' ? 1 : 0;
 				this.maskState = 2;
