@@ -281,7 +281,7 @@
 			　　url:"http://127.0.0.1:3001/api/searcRoom",
 			　　method:"GET",
 				data: {
-						id: 1
+						id: options.id
 					},
 			　　success:(res)=> {
 				console.log('sss',res.data)
@@ -362,7 +362,7 @@
 			// },
 			buy(item){
 				uni.navigateTo({
-					url: `/pages/order/createOrder?id=${item.id}`
+					url: `/pages/order/createOrder?id=${item.id}&hotelId=${item.hotelId}`
 				})
 			},
 			stopPrevent(){}

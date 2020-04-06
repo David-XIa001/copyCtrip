@@ -318,9 +318,13 @@
 			 },
 			// 查询酒店
 			search () {
+				var endTime = new Date(this.endDate).getTime() / 1000 - parseInt(new Date(this.startDate).getTime() / 1000);
+				var timeDay = parseInt(endTime / 60 / 60 / 24); 
 				let obj = {}
 				obj.endDate = this.endDate
 				obj.startDate = this.startDate
+				obj.dayNum = timeDay
+				console.log('aaaa',obj)
 				this.getTime(obj);
 				uni.navigateTo({
 					url: `/pages/product/list?city=${this.array[this.locationIndex]}`
