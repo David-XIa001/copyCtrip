@@ -193,6 +193,7 @@
 
 <script>
 	import share from '@/components/share';
+	import { mapState } from 'vuex'; 
 	export default{
 		components: {
 			share
@@ -291,11 +292,8 @@
 				this.room.forEach((item)=>{
 					this.imgList.push(item.picture)
 				})
-				// this.imgList.push(res.data.hotel.banner)
-						// this.goodsList = res.data
 			　　}
 			})
-			console.log('aaa0',options.id)
 			//接收传值,id里面放的是标题，因为测试数据并没写id 
 			let id = options.id;
 			// if(id){
@@ -315,6 +313,9 @@
 				}
 			})
 			this.shareList = await this.$api.json('shareList');
+		},
+		computed: {
+			...mapState(['hasLogin'])
 		},
 		methods:{
 			//规格弹窗开关
@@ -361,9 +362,24 @@
 			// 	this.favorite = !this.favorite;
 			// },
 			buy(item){
-				uni.navigateTo({
-					url: `/pages/order/createOrder?id=${item.id}&hotelId=${item.hotelId}`
-				})
+				if(!this.hasLogin){
+					uni.showModal({
+						cancelText:'取消',
+						confirmText:'登录',
+						content:'你还未登录,请先登录!',
+						success:(res)=>{
+							if (res.confirm) {
+							    uni.navigateTo({
+							    	url: `/pages/public/login`
+							    })
+							}
+						}
+					})
+				}else{
+					uni.navigateTo({
+						url: `/pages/order/createOrder?id=${item.id}&hotelId=${item.hotelId}`
+					})
+				}
 			},
 			stopPrevent(){}
 		},

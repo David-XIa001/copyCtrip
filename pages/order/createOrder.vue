@@ -28,10 +28,10 @@
 				</picker>
 			</view>
 			<view class="name lable">
-				<text>姓名:</text><input v-model="name" placeholder="请输入姓名"></input>
+				<text>姓名:</text><input disabled="" :value="this.userInfo.nickname" placeholder="请输入姓名"></input>
 			</view>
 			<view class="phone lable">
-				<text>电话:</text><input v-model="phone" type="number" maxlength="11" placeholder="请输入电话号码"></input>
+				<text>电话:</text><input disabled :value="this.userInfo.mobile" type="number" maxlength="11" placeholder="请输入电话号码"></input>
 			</view>
 			<view class="roomNum">
 				<picker @change="bindPickerChangeTime" :value="timeIndex" :range="timeArray" >
@@ -99,12 +99,12 @@
 			//console.log(data);
 		},
 		computed: {
-			...mapState(['choiceTime'])
+			...mapState(['choiceTime','userInfo'])
 		},
 		methods: {
 			// 选择房间数
 			bindPickerChangeRoomNum (e){
-				console.log('sss',this.choiceTime)
+				console.log('sss',this.userInfo)
 				this.roomIndex = e.detail.value
 				this.roomNum = this.roomArray[this.roomIndex]
 			},
@@ -122,10 +122,8 @@
 				data.endDate = this.choiceTime.endDate
 				data.dayNum = this.choiceTime.dayNum
 				data.roomNum = this.roomNum
-				data.phone = this.phone 
-				data.people = this.name
-				
-				
+				data.phone = this.userInfo.mobile
+				data.people = this.userInfo.nickname
 				uni.request({
 				　　url:"http://127.0.0.1:3001/api/creatOrder",
 				　　method:"POST",

@@ -37,10 +37,20 @@
 		}, {
 			"path": "pages/cart/cart",
 			"style": {
-				"navigationBarTitleText": "购物车"
+				"navigationBarTitleText": "我的订单"
 			}
 		}, {
 			"path": "pages/public/login",
+			"style": {
+				"navigationBarTitleText": "",
+				"navigationStyle": "custom",
+				"app-plus": {
+					"titleNView": false,
+					"animationType": "slide-in-bottom"
+				}
+			}
+		}, {
+			"path": "pages/public/regist",
 			"style": {
 				"navigationBarTitleText": "",
 				"navigationStyle": "custom",

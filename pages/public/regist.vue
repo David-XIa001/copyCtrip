@@ -5,11 +5,22 @@
 		<view class="right-top-sign"></view>
 		<!-- 设置白色背景防止软键盘把下部绝对定位元素顶上来盖住输入框等 -->
 		<view class="wrapper">
-			<view class="left-top-sign">LOGIN</view>
+			<view class="left-top-sign">REGIST</view>
 			<view class="welcome">
-				欢迎回来！
+				欢迎注册!
 			</view>
 			<view class="input-content">
+				<view class="input-item">
+					<text class="tit">用户名</text>
+					<input 
+						type="text" 
+						:value="userName" 
+						placeholder="请输入用户名"
+						maxlength="11"
+						data-key="userName"
+						@input="inputChange"
+					/>
+				</view>
 				<view class="input-item">
 					<text class="tit">手机号码</text>
 					<input 
@@ -32,16 +43,13 @@
 						password 
 						data-key="password"
 						@input="inputChange"
-						@confirm="toLogin"
+						@confirm="toRegist"
 					/>
 				</view>
 			</view>
-			<button class="confirm-btn" @click="toLogin" :disabled="logining">登录</button>
+			<button class="confirm-btn" @click="toRegist" :disabled="logining">注册</button>
 		</view>
-		<view class="register-section">
-			还没有账号?
-			<text @click="toRegist">马上注册</text>
-		</view>
+
 	</view>
 </template>
 
@@ -53,6 +61,7 @@
 	export default{
 		data(){
 			return {
+				userName:'',
 				mobile: '',
 				password: '',
 				logining: false
@@ -71,48 +80,25 @@
 				uni.navigateBack();
 			},
 			toRegist(){
-				uni.navigateTo({
-					url : '/pages/public/regist'
-				})
-			},
-			async toLogin(){
-				this.logining = true;
+				console.log('ss',this.userName)
+				console.log('ss',this.mobile)
+				console.log('ss',this.password)
 				uni.request({
-				　　url:"http://127.0.0.1:3001/api/login",
+				　　url:"http://127.0.0.1:3001/api/regist",
 				　　method:"POST",
 					data: {
+							username : this.userName,
 							phone : this.mobile,
 							password : this.password
 						},
 				　　success:(res)=> {
-						this.logining = false;
-						if(res.data != '登录失败'){
-							console.log(res.data)
-							let obj = {}
-							obj.mobile = res.data.phone
-							obj.nickname = res.data.username
-							obj.portrait = 'http://127.0.0.1:3001/static/room/cover.jpg'
-							this.login(obj);
-							uni.navigateBack()
-						}else{
-							uni.showToast({
-								icon:none,
-								title:'登录失败'
-							})
-						}
-
+					if(res.data == '注册成功')
+						uni.redirectTo({
+							url : '/pages/public/login'
+						})
 				　　}
 				})
-
-				// const result = await this.$api.json('userInfo');
-				// if(result.status === 1){
-				// 	this.login(result.data);
-    //                 uni.navigateBack();  
-				// }else{
-				// 	this.$api.msg(result.msg);
-				// 	this.logining = false;
-				// }
-			}
+			},
 		},
 
 	}
